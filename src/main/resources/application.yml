@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+cassandra:
+  database:
+    keyspace-name: cycling
+    contact-points: 127.0.0.1
+    port: 9042
+    userName: cassandra
+    password: cassandra
