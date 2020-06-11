@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.nineleaps.order.entity.OrderEntity;
 import com.nineleaps.order.entity.OrderTablePrimaryKey;
 import com.nineleaps.order.exception.NoContentException;
@@ -36,10 +40,32 @@ public class OrderController {
 	
 	@Autowired
 	private OrderRepository orderRepository;
+	
+	@Autowired
+	private KafkaTemplate<String, Order> kafkaTemplate;
+
+	private static final String TOPIC = "Kafka_Order_test3";
+
 
 	@PostMapping("/save")
 	public ResponseEntity<Order> saveIntoOrderItemTable(@RequestBody Order order) {
-		return new ResponseEntity<>(orderService.saveIntoOrderItemTable(order), HttpStatus.OK);
+		
+		Order orderData =orderService.saveIntoOrderItemTable(order);
+		 ObjectMapper mapper = new ObjectMapper();
+	      //Converting the Object to JSONString
+	      String jsonString =null;
+		try {
+			mapper.registerModule(new Jdk8Module());
+			jsonString = mapper.writeValueAsString(orderData);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   
+		
+		kafkaTemplate.send(TOPIC,order);
+
+		return new ResponseEntity<>(orderData, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "{id}/{customerEmail}")
