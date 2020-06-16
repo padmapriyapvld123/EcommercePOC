@@ -15,6 +15,7 @@ import com.nineleaps.order.entity.OrderTablePrimaryKey;
 import com.nineleaps.order.exception.NoContentException;
 import com.nineleaps.order.entity.ItemEntity;
 import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.Product;
 import com.nineleaps.order.model.Item;
 import com.nineleaps.order.repository.OrderRepository;
 
