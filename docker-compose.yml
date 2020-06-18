@@ -1,0 +1,35 @@
+version: "3.5"
+services:
+  cassandra:
+    image: "cassandra:latest"
+   
+    ports:
+      - "9042:9042"
+    network_mode: "host"
+    volumes:
+      - "./cassandra-init.sh:/cassandra-init.sh"
+    command: "sh /cassandra-init.sh"
+ 
+      
+  order:
+    image: orderservice:latest
+    ports:
+      - "8080:8080"
+    network_mode: "host"
+    
+  product:
+    image: productservice:latest
+    ports:
+      - "8083:8083"
+    network_mode: "host"
+   
+  supplier:
+    image: supplierservice:latest
+    ports:
+      - "8082:8082"
+    network_mode: "host"
+    
+      
+    
+
+ 
