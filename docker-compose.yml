@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.6"
 services:
   cassandra:
     image: "cassandra:latest"
@@ -9,25 +9,54 @@ services:
     volumes:
       - "./cassandra-init.sh:/cassandra-init.sh"
     command: "sh /cassandra-init.sh"
- 
-      
+    
+  registry:
+    image: apiregistry:latest
+    ports:
+      - "8761:8761"
+  
+  gateway:
+    image: apigateway:1.0
+    ports:
+      - "8765:8765"
+    links:
+      - registry
+    environment:
+    - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://registry:8761/eureka
+    restart: on-failure
+     
+    
+    
+    
   order:
     image: orderservice:latest
     ports:
       - "8080:8080"
     network_mode: "host"
+    depends_on:
+       - cassandra
+       - gateway
+    restart: always
     
   product:
     image: productservice:latest
     ports:
       - "8083:8083"
     network_mode: "host"
+    depends_on: 
+        - cassandra
+        - gateway
+    restart: always
    
   supplier:
     image: supplierservice:latest
     ports:
       - "8082:8082"
     network_mode: "host"
+    depends_on: 
+         - cassandra
+         - gateway
+    restart: always
     
       
     
