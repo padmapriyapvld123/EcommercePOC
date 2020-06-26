@@ -1,6 +1,7 @@
 package com.nineleaps.order.controller;
 
-import java.util.ArrayList;
+import java.util.ArrayList
+;
 
 
 import java.util.List;
@@ -30,6 +31,7 @@ import com.nineleaps.order.proxy.ProductProxy;
 import com.nineleaps.order.repository.OrderRepository;
 import com.nineleaps.order.service.OrderService;
 
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -37,8 +39,13 @@ public class OrderController {
 	@Autowired(required=true)
 	private ProductProxy proxy;
 
-	@Autowired
+	
 	private OrderService orderService;
+	
+	@Autowired
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -62,7 +69,8 @@ public class OrderController {
 
 		for (int i = 0; i < n; i++) {
 
-			Product product = proxy.checkProductAvailability(order.getItem().get(i).getProductId());
+		//	Product product = proxy.checkProductAvailability(order.getItem().get(i).getProductId());
+			Product product =orderService.saveIfProductAvailable(order.getItem().get(i).getProductId());
 			if (product!=null && product.getProductId() != null) {
 
 				Order orderData = orderService.saveIntoOrderItemTable(order);
@@ -87,13 +95,18 @@ public class OrderController {
 	public ResponseEntity<?> fetchRecordFromOrderTable(@PathVariable("id") String id,
 			@PathVariable("customerEmail") String customerEmail) {
 		Order orderData = null;
+		ResponseEntity<?> orderDataResult = null;
 		try {
+			
 			orderData = orderService.fetchRecordFromOrderTable(id, customerEmail);
+			orderDataResult = orderService.getIfProductAvailable(orderData);
+			
+			
 		} catch (NoContentException e) {
 			return new ResponseEntity<>("No Content", HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<>(orderData, HttpStatus.OK);
+		return orderDataResult;
 
 	}
 

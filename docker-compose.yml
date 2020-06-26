@@ -2,32 +2,33 @@ version: "3.6"
 services:
   cassandra:
     image: "cassandra:latest"
-   
     ports:
-      - "9042:9042"
+      - 9042:9042
     network_mode: "host"
     volumes:
       - "./cassandra-init.sh:/cassandra-init.sh"
+      - /home/nineleaps/myvol1:/var/lib/cassandra
+      
     command: "sh /cassandra-init.sh"
     
+    restart: always
+  
+  
   registry:
     image: apiregistry:latest
     ports:
       - "8761:8761"
   
   gateway:
-    image: apigateway:1.0
+    image: apigateway:latest
     ports:
       - "8765:8765"
     links:
       - registry
     environment:
-    - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://registry:8761/eureka
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://registry:8761/eureka
     restart: on-failure
      
-    
-    
-    
   order:
     image: orderservice:latest
     ports:
@@ -57,6 +58,9 @@ services:
          - cassandra
          - gateway
     restart: always
+    env_file:
+     - ./my-env.txt
+    
     
       
     
