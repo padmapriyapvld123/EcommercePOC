@@ -13,6 +13,7 @@ import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.DropKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.KeyspaceOption;
+import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
@@ -71,6 +72,8 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	  
 	  @Override
 	  protected boolean getMetricsEnabled() { return false; }
+	  
+	
 	  
 /*	 @Override
 	    protected AuthProvider getAuthProvider() {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Order implements Serializable{
+public class OrderRequest implements Serializable{
 		private static final long serialVersionUID = 1L;
 		private String id;
 		private String date;
@@ -15,11 +15,11 @@ public class Order implements Serializable{
 		private List<Item> item;
 		private double total;
 		
-		public Order() {
+		public OrderRequest() {
 			
 		}
 		
-		public Order(String id, String date, String customerName, String customerEmail, String customerAddress,
+		public OrderRequest(String id, String date, String customerName, String customerEmail, String customerAddress,
 				List<Item> item, double total) {
 			super();
 			this.id = id;

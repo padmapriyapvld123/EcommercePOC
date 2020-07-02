@@ -14,7 +14,7 @@ import com.nineleaps.order.entity.OrderEntity;
 import com.nineleaps.order.entity.OrderTablePrimaryKey;
 import com.nineleaps.order.exception.NoContentException;
 import com.nineleaps.order.entity.ItemEntity;
-import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.OrderRequest;
 import com.nineleaps.order.model.Product;
 import com.nineleaps.order.proxy.ProductProxy;
 import com.nineleaps.order.model.Item;
@@ -31,12 +31,12 @@ public class OrderService {
 	private ProductProxy proxy;
 
 
-	public Order saveIntoOrderItemTable(Order order) {
+	public OrderRequest saveIntoOrderItemTable(OrderRequest order) {
 		OrderEntity entity = orderRepository.save(mapObjectToEntity(order));
 		return mapEntityToObject(entity);
 	}
 
-	public OrderEntity mapObjectToEntity(Order order) {
+	public OrderEntity mapObjectToEntity(OrderRequest order) {
 
 		OrderTablePrimaryKey primaryKey = new OrderTablePrimaryKey();
 		primaryKey.setId(order.getId());
@@ -53,7 +53,7 @@ public class OrderService {
 		return entity;
 	}
 
-	private List<ItemEntity> addValues(Order order) {
+	private List<ItemEntity> addValues(OrderRequest order) {
 		List<ItemEntity> itemEntityList = new ArrayList<>();
 
 		// ItemEntity itemEntity = new ItemEntity();
@@ -75,7 +75,7 @@ public class OrderService {
 
 	}
 
-	public Order mapEntityToObject(OrderEntity entity) {
+	public OrderRequest mapEntityToObject(OrderEntity entity) {
 
 		List<Item> itemsList = new ArrayList<>();
 		int n = entity.getItemEntity().size();
@@ -90,7 +90,7 @@ public class OrderService {
 			itemsList.add(item);
 		}
 
-		Order table = new Order();
+		OrderRequest table = new OrderRequest();
 		table.setDate(entity.getDate());
 		table.setId(entity.getPrimaryKey().getId());
 		table.setCustomerEmail(entity.getPrimaryKey().getCustomerEmail());
@@ -101,7 +101,7 @@ public class OrderService {
 		return table;
 	}
 
-	public Order fetchRecordFromOrderTable(String id, String customerEmail) throws NoContentException {
+	public OrderRequest fetchRecordFromOrderTable(String id, String customerEmail) throws NoContentException {
 		OrderTablePrimaryKey primaryKey = new OrderTablePrimaryKey();
 		primaryKey.setId(id);
 		primaryKey.setCustomerEmail(customerEmail);
@@ -114,7 +114,7 @@ public class OrderService {
 
 	}
 
-	public Order updateRecordIntoOrderTable(Order order) {
+	public OrderRequest updateRecordIntoOrderTable(OrderRequest order) {
 		OrderEntity entity = orderRepository.save(mapObjectToEntity(order));
 		return mapEntityToObject(entity);
 
@@ -126,7 +126,7 @@ public class OrderService {
 
 	}
 
-	public ResponseEntity<?> getIfProductAvailable(Order orderData) {
+	public ResponseEntity<?> getIfProductAvailable(OrderRequest orderData) {
 
 		if (orderData != null) {
 			Product product = proxy.checkProductAvailability(orderData.getItem().get(0).getProductId());

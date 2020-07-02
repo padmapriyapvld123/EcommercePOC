@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.nineleaps.order.entity.OrderEntity;
 import com.nineleaps.order.entity.OrderTablePrimaryKey;
-import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.OrderRequest;
 
 @Repository
 public interface OrderRepository extends CrudRepository<OrderEntity, OrderTablePrimaryKey> {

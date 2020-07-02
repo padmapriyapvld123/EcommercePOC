@@ -24,7 +24,7 @@ import com.nineleaps.order.entity.OrderEntity;
 import com.nineleaps.order.entity.OrderTablePrimaryKey;
 import com.nineleaps.order.exception.NoContentException;
 import com.nineleaps.order.model.Item;
-import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.OrderRequest;
 import com.nineleaps.order.model.OrderResponse;
 import com.nineleaps.order.model.Product;
 import com.nineleaps.order.proxy.ProductProxy;
@@ -53,7 +53,7 @@ public class OrderController {
 	
 
 	@Autowired
-	private KafkaTemplate<String, Order> kafkaTemplate;
+	private KafkaTemplate<String, OrderRequest> kafkaTemplate;
 
 	
 	
@@ -63,7 +63,7 @@ public class OrderController {
 
 	@PostMapping("/save")
 
-	public ResponseEntity<?> saveIntoOrderItemTable(@RequestBody Order order) {
+	public ResponseEntity<?> saveIntoOrderItemTable(@RequestBody OrderRequest order) {
 
 		int n = order.getItem().size();
 
@@ -73,7 +73,7 @@ public class OrderController {
 			Product product =orderService.saveIfProductAvailable(order.getItem().get(i).getProductId());
 			if (product!=null && product.getProductId() != null) {
 
-				Order orderData = orderService.saveIntoOrderItemTable(order);
+				OrderRequest orderData = orderService.saveIntoOrderItemTable(order);
 				kafkaTemplate.send(TOPIC, order);
 
 				return new ResponseEntity<>(orderData, HttpStatus.OK);
@@ -94,7 +94,7 @@ public class OrderController {
 	@GetMapping(path = "{id}/{customerEmail}")
 	public ResponseEntity<?> fetchRecordFromOrderTable(@PathVariable("id") String id,
 			@PathVariable("customerEmail") String customerEmail) {
-		Order orderData = null;
+		OrderRequest orderData = null;
 		ResponseEntity<?> orderDataResult = null;
 		try {
 			
@@ -111,7 +111,7 @@ public class OrderController {
 	}
 
 	@PutMapping("/updateOrder/{id}")
-	public ResponseEntity<?> updateOrder(@PathVariable("id") String id, @RequestBody Order order) {
+	public ResponseEntity<?> updateOrder(@PathVariable("id") String id, @RequestBody OrderRequest order) {
 		OrderTablePrimaryKey orderTablePrimaryKey = new OrderTablePrimaryKey();
 		orderTablePrimaryKey.setCustomerEmail(order.getCustomerEmail());
 		orderTablePrimaryKey.setId(id);

@@ -8,11 +8,11 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.1.14.RELEASE</version>
 	</parent>
-	<groupId>com.nineleaps.product</groupId>
-	<artifactId>ProductMicroService</artifactId>
+	<groupId>com.nineleaps.order</groupId>
+	<artifactId>OrderMicroService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>springboot-cassandra-1</name>
-	<description>POC for Product MicroService</description>
+	<description>POC for Order MicroService</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -21,6 +21,8 @@
 		<docker.registry>orderservice</docker.registry>
 		<maven.compiler.source>8</maven.compiler.source>
 		<maven.compiler.target>8</maven.compiler.target>
+		<mockito.version>2.24.0</mockito.version>
+		
 
 	</properties>
 
@@ -122,11 +124,12 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- junit 5 -->
+		
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.3.1</version>
-			<scope>test</scope>
+			<!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>

@@ -9,7 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.OrderRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class KafkaConfig{
 
     @Bean
-    public ProducerFactory<String, Order> producerFactory() {
+    public ProducerFactory<String, OrderRequest> producerFactory() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -31,7 +31,7 @@ public class KafkaConfig{
 
 
     @Bean
-    public KafkaTemplate<String, Order> kafkaTemplate() {
+    public KafkaTemplate<String, OrderRequest> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 

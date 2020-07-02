@@ -1,10 +1,17 @@
 package com.nineleaps.order;
 
+import static org.junit.Assert.assertEquals;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cassandraunit.spring.CassandraDataSet;
-
-
 import org.cassandraunit.spring.CassandraUnit;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,38 +22,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nineleaps.order.constants.JsonConstants;
-import com.nineleaps.order.controller.OrderController;
-import com.nineleaps.order.entity.ItemEntity;
-import com.nineleaps.order.entity.OrderEntity;
-import com.nineleaps.order.entity.OrderTablePrimaryKey;
-import com.nineleaps.order.model.Order;
+import com.nineleaps.order.model.OrderRequest;
 import com.nineleaps.order.model.Product;
-import com.nineleaps.order.repository.OrderRepository;
 import com.nineleaps.order.service.OrderService;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.test.context.ContextConfiguration;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(JUnitPlatform.class)
 @SpringBootTest({ "spring.data.cassandra.port=9042", "spring.data.cassandra.keyspace-name=cycling1" })
@@ -55,6 +45,7 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration
 @CassandraDataSet(value = { "cassandra-init.sh" }, keyspace = "cycling1")
 @CassandraUnit
+//@TestMethodOrder(OrderAnnotation.class)
 public class OrderServiceTest {
 
 	private MockMvc mockMvc;
@@ -63,13 +54,13 @@ public class OrderServiceTest {
 	private OrderService orderService;
 
 	@Autowired
-	private OrderRepository OrderRepository;
+	private com.nineleaps.order.repository.OrderRepository OrderRepository;
 
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
 	@Autowired
-	private OrderController OrderController;
+	private com.nineleaps.order.controller.OrderController OrderController;
 
 	private OrderService mockOrderService = null;
 
@@ -84,16 +75,18 @@ public class OrderServiceTest {
 
 	@Test
 	@DisplayName("saveOrder")
+	//@Order(1)
 	public void saveOrder() throws Exception {
 
-		Order OrderResult = null;
+		OrderRequest OrderResult = null;
 		List<Product> productList = new ArrayList<>();
 		String mockOrderJson = JsonConstants.mockOrderJson;
-		Product product = new Product("P001", "Table", 100.0, "Black Table", "test");
-		productList.add(product);
+		String mockProductJson = JsonConstants.mockProductJson;
+		ObjectMapper mapper1 = new ObjectMapper();
+		Product product = mapper1.readValue(mockProductJson, Product.class);productList.add(product);
 		
 		ObjectMapper mapper = new ObjectMapper();
-		Order order = mapper.readValue(mockOrderJson, Order.class);
+		OrderRequest order = mapper.readValue(mockOrderJson, OrderRequest.class);
 
 		mockOrderService = Mockito.mock(OrderService.class);
 
@@ -108,12 +101,12 @@ public class OrderServiceTest {
 	@Test
 	@DisplayName("getOrderById")
 	public void getOrderById() throws Exception {
-		Order OrderResult = null;
+		OrderRequest OrderResult = null;
 
 		String mockOrderJson = JsonConstants.mockOrderJson;
 
 		ObjectMapper mapper = new ObjectMapper();
-		Order order = mapper.readValue(mockOrderJson, Order.class);
+		OrderRequest order = mapper.readValue(mockOrderJson, OrderRequest.class);
 
 		mockOrderService = Mockito.mock(OrderService.class);
 
@@ -131,7 +124,7 @@ public class OrderServiceTest {
 		String mockOrderJson = JsonConstants.mockOrderJson;
 
 		ObjectMapper mapper = new ObjectMapper();
-		Order order = mapper.readValue(mockOrderJson, Order.class);
+		OrderRequest order = mapper.readValue(mockOrderJson, OrderRequest.class);
 
 		mockMvc.perform(get("/order/getAllOrders").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].customerEmail").value(order.getCustomerEmail())).andExpect(status().isOk());
@@ -141,14 +134,16 @@ public class OrderServiceTest {
 	@Test
 	public void updateOrderAPI() throws Exception {
 
-		Order orderResult = null;
+		OrderRequest orderResult = null;
 		List<Product> productList = new ArrayList<>();
 		String mockOrderJson = JsonConstants.mockOrderJson;
 
 		ObjectMapper mapper = new ObjectMapper();
-		Order order = mapper.readValue(mockOrderJson, Order.class);
+		OrderRequest order = mapper.readValue(mockOrderJson, OrderRequest.class);
 
-		Product product = new Product("P001", "Table", 100.0, "Black Table", "test");
+		String mockProductJson = JsonConstants.mockProductJson;
+		ObjectMapper mapper1 = new ObjectMapper();
+		Product product = mapper1.readValue(mockProductJson, Product.class);
 		productList.add(product);
 
 		mockOrderService = Mockito.mock(OrderService.class);
@@ -165,7 +160,7 @@ public class OrderServiceTest {
 		
 		String mockOrderJson = JsonConstants.mockOrderJson;
 		ObjectMapper mapper = new ObjectMapper();
-		Order order = mapper.readValue(mockOrderJson, Order.class);
+		OrderRequest order = mapper.readValue(mockOrderJson, OrderRequest.class);
 		String orderId = order.getId();
 		
 		
