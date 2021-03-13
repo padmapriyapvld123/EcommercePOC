@@ -1,2 +1,0 @@
-USERNAME=testpoc162020@gmail.com
-PASSWORD=testpoc@123
